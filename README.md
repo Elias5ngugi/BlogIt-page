@@ -1,2 +1,1 @@
-# blogit-page
 # BlogIt-page
