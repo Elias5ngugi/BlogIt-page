@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import { TextField, Button, Box, Container, Typography, Alert, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
+interface Credentials {
+  email: string;
+  password: string;
+}
+
 const LoginPage: React.FC = () => {
-  const [credentials, setCredentials] = useState({
+  const [credentials, setCredentials] = useState<Credentials>({
     email: '',
     password: '',
   });
@@ -25,6 +30,8 @@ const LoginPage: React.FC = () => {
       return;
     }
 
+    console.log('Login credentials:', credentials); // Log credentials being sent
+
     try {
       setLoading(true);
       const res = await fetch('http://localhost:5000/api/auth/login', {
@@ -34,8 +41,10 @@ const LoginPage: React.FC = () => {
       });
 
       const data = await res.json();
+      console.log('Response from server:', data); // Log server response
+
       if (res.ok) {
-        const token = data.token; 
+        const token: string = data.token; 
         if (token) {
           localStorage.setItem('authToken', token); 
           setSuccess(true);
@@ -50,7 +59,7 @@ const LoginPage: React.FC = () => {
         setError(data.message || 'Login failed');
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error during login:', error); // Log any error during the request
       setError('Something went wrong!');
     } finally {
       setLoading(false);
