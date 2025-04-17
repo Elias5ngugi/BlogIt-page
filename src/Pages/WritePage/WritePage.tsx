@@ -1,72 +1,93 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../Authx/AuthContext';
-import { useNavigate } from 'react-router-dom'; 
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Box, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-const WritePage: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+const WriteBlogPage: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [body, setBody] = useState<string>('');
-  const [featuredImage, setFeaturedImage] = useState<File | null>(null);
-  const navigate = useNavigate(); 
+  const [imageUrl, setImageUrl] = useState<string>('');
+  const [editId, setEditId] = useState<string | null>(null);
 
-  if (!isAuthenticated) {
-    
-    navigate('/login');
-    return null; 
-  }
+  const navigate = useNavigate();
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-  };
-
-  const handleBodyChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setBody(e.target.value);
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFeaturedImage(e.target.files[0]);
+  useEffect(() => {
+    const editBlog = JSON.parse(localStorage.getItem('editBlog') || 'null');
+    if (editBlog) {
+      setTitle(editBlog.title);
+      setBody(editBlog.body);
+      setImageUrl(editBlog.imageUrl || '');
+      setEditId(editBlog.id);
+      localStorage.removeItem('editBlog');
     }
-  };
+  }, []);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value);
+  const handleBodyChange = (e: React.ChangeEvent<HTMLInputElement>) => setBody(e.target.value);
+  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => setImageUrl(e.target.value);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ title, body, featuredImage });
 
-    // Submit logic (e.g., send data to the server)
+    const newBlog = {
+      id: editId || Date.now().toString(),
+      title,
+      body,
+      imageUrl,
+    };
+
+    let existingBlogs = JSON.parse(localStorage.getItem('myBlogs') || '[]');
+
+    if (editId) {
+      
+      existingBlogs = existingBlogs.map((blog: any) => (blog.id === editId ? newBlog : blog));
+    } else {
+      
+      existingBlogs.push(newBlog);
+    }
+
+    localStorage.setItem('myBlogs', JSON.stringify(existingBlogs));
+    navigate('/myblogs');
   };
 
   return (
-    <div>
-      <h1>Write a Story</h1>
+    <Box sx={{ padding: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        {editId ? 'Edit Blog' : 'Write New Blog'}
+      </Typography>
+
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Title:</label>
-          <input
-            type="text"
-            value={title}
-            onChange={handleTitleChange}
-            placeholder="Enter story title"
-            required
-          />
-        </div>
-        <div>
-          <label>Body:</label>
-          <textarea
-            value={body}
-            onChange={handleBodyChange}
-            placeholder="Write your story here"
-            required
-          />
-        </div>
-        <div>
-          <label>Featured Image:</label>
-          <input type="file" onChange={handleImageChange} />
-        </div>
-        <button type="submit">Submit</button>
+        <TextField
+          label="Title"
+          value={title}
+          onChange={handleTitleChange}
+          fullWidth
+          variant="outlined"
+          sx={{ mb: 3 }}
+        />
+        <TextField
+          label="Body"
+          value={body}
+          onChange={handleBodyChange}
+          fullWidth
+          multiline
+          rows={4}
+          variant="outlined"
+          sx={{ mb: 3 }}
+        />
+        <TextField
+          label="Image URL (optional)"
+          value={imageUrl}
+          onChange={handleImageUrlChange}
+          fullWidth
+          variant="outlined"
+          sx={{ mb: 3 }}
+        />
+        <Button type="submit" variant="contained" color="primary">
+          {editId ? 'Update Blog' : 'Save Blog'}
+        </Button>
       </form>
-    </div>
+    </Box>
   );
 };
 
-export default WritePage;
+export default WriteBlogPage;

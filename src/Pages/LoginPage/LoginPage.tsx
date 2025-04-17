@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Container, Typography, Alert, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../Authx/AuthContext';  
 
 interface Credentials {
   email: string;
@@ -16,6 +17,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -30,8 +32,6 @@ const LoginPage: React.FC = () => {
       return;
     }
 
-    console.log('Login credentials:', credentials); // Log credentials being sent
-
     try {
       setLoading(true);
       const res = await fetch('http://localhost:5000/api/auth/login', {
@@ -41,14 +41,14 @@ const LoginPage: React.FC = () => {
       });
 
       const data = await res.json();
-      console.log('Response from server:', data); // Log server response
 
       if (res.ok) {
-        const token: string = data.token; 
+        const token: string = data.token;
         if (token) {
           localStorage.setItem('authToken', token); 
+          login(null); 
           setSuccess(true);
-          
+
           setTimeout(() => {
             navigate('/');
           }, 1500);
@@ -59,7 +59,7 @@ const LoginPage: React.FC = () => {
         setError(data.message || 'Login failed');
       }
     } catch (error) {
-      console.error('Error during login:', error); // Log any error during the request
+      console.error('Error during login:', error);
       setError('Something went wrong!');
     } finally {
       setLoading(false);
@@ -122,14 +122,12 @@ const LoginPage: React.FC = () => {
           </Button>
         </form>
 
-        {/* Error Message */}
         {error && (
           <Alert severity="error" sx={{ mt: 2, width: '100%' }}>
             {error}
           </Alert>
         )}
 
-        {/* Success Message */}
         {success && (
           <Alert severity="success" sx={{ mt: 2, width: '100%' }}>
             Login successful!

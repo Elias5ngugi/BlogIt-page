@@ -22,9 +22,9 @@ const LandingPage: React.FC = () => {
         <div className="navbar-links">
           {isLoggedIn ? (
             <>
-              <Link to="/write">Write</Link>
-              <Link to="/myblogs">My Blogs</Link>
-              <Link to="/profile">Profile</Link>
+              <Link className="signup-btn" to="/write">Write</Link>
+              <Link className="login-btn" to="/myblogs">My Blogs</Link>
+              <Link  className="signup-btn" to="/profile">Profile</Link>
               <button onClick={handleLogout} className="logout-btn">Logout</button>
             </>
           ) : (
@@ -44,8 +44,18 @@ const LandingPage: React.FC = () => {
             BlogIt allows you to share your experiences, insights, and creativity with a global audience.
           </p>
           <div className="cta-buttons">
-            <Link to="/signup" className="cta-btn primary-cta">Start Writing</Link>
-            <Link to="/blogs" className="cta-btn secondary-cta">Explore Stories</Link>
+            {isLoggedIn?(
+              <>
+               <Link to="/write" className="cta-btn primary-cta">Start Writing</Link>
+               <Link to="/blogs" className="cta-btn secondary-cta">Explore Stories</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/signup" className="cta-btn primary-cta">Start Writing</Link>
+                <Link to="/blogs" className="cta-btn secondary-cta">Explore Stories</Link>
+              </>
+           )}
+
           </div>
         </div>
       </section>
