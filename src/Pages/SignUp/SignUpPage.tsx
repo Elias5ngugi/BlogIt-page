@@ -9,6 +9,10 @@ import {
   CircularProgress,
   CssBaseline,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
 const SignUpPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -23,30 +27,26 @@ const SignUpPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
-  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError('');
   };
 
-  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match.');
       return;
     }
 
-    
     if (!formData.email || !formData.password || !formData.firstName || !formData.lastName || !formData.username) {
       setError('Please fill in all fields.');
       return;
     }
 
-    
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(formData.email)) {
       setError('Please enter a valid email address.');
@@ -55,16 +55,10 @@ const SignUpPage: React.FC = () => {
 
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:5000/api/auth/signup', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          username: formData.username,
-          password: formData.password,
-        }),
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
@@ -80,6 +74,10 @@ const SignUpPage: React.FC = () => {
           confirmPassword: '',
         });
         setError('');
+
+        setTimeout(() => {
+          navigate('/login');
+        }, 1500);
       } else {
         setError(data.message || 'Signup failed. Try again.');
       }
@@ -123,8 +121,6 @@ const SignUpPage: React.FC = () => {
               onChange={handleChange}
               margin="dense"
               required
-              error={!!error && !formData.firstName}
-              helperText={error && !formData.firstName ? 'First name is required.' : ''}
             />
             <TextField
               fullWidth
@@ -134,8 +130,6 @@ const SignUpPage: React.FC = () => {
               onChange={handleChange}
               margin="dense"
               required
-              error={!!error && !formData.lastName}
-              helperText={error && !formData.lastName ? 'Last name is required.' : ''}
             />
             <TextField
               fullWidth
@@ -146,8 +140,6 @@ const SignUpPage: React.FC = () => {
               onChange={handleChange}
               margin="dense"
               required
-              error={!!error && !formData.email}
-              helperText={error && !formData.email ? 'Email is required.' : ''}
             />
             <TextField
               fullWidth
@@ -157,8 +149,6 @@ const SignUpPage: React.FC = () => {
               onChange={handleChange}
               margin="dense"
               required
-              error={!!error && !formData.username}
-              helperText={error && !formData.username ? 'Username is required.' : ''}
             />
             <TextField
               fullWidth
@@ -169,8 +159,6 @@ const SignUpPage: React.FC = () => {
               onChange={handleChange}
               margin="dense"
               required
-              error={!!error && !formData.password}
-              helperText={error && !formData.password ? 'Password is required.' : ''}
             />
             <TextField
               fullWidth
@@ -181,36 +169,39 @@ const SignUpPage: React.FC = () => {
               onChange={handleChange}
               margin="dense"
               required
-              error={!!error && !formData.confirmPassword}
-              helperText={error && !formData.confirmPassword ? 'Confirm your password.' : ''}
+              error={formData.password !== formData.confirmPassword}
+              helperText={
+                formData.password !== formData.confirmPassword
+                  ? 'Passwords must match.'
+                  : ''
+              }
             />
 
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              color="primary"
-              disabled={loading}
               sx={{ mt: 2 }}
+              disabled={loading}
             >
-              {loading ? <CircularProgress size={24} /> : 'Create Account'}
+              {loading ? <CircularProgress size={24} /> : 'Sign Up'}
             </Button>
+
+            {error && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {error}
+              </Alert>
+            )}
+            {success && (
+              <Alert severity="success" sx={{ mt: 2 }}>
+                Account created successfully! Redirecting to login...
+              </Alert>
+            )}
           </Box>
 
-          {/* Error Message */}
-          {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
-            </Alert>
-          )}
-
-          {/* Success Message */}
-          {success && (
-            <Alert severity="success" sx={{ mt: 2 }}>
-              Account created successfully!
-            </Alert>
-          )}
-          <p>Already have an account? <a href="/login">Log In</a></p>
+          <Typography sx={{ mt: 2 }}>
+            Already have an account? <a href="/login">Login</a>
+          </Typography>
         </Box>
       </Container>
     </Box>

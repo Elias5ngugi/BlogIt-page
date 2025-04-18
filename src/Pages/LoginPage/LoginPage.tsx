@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Container, Typography, Alert, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../Authx/AuthContext';  
+import { useAuth } from '../../Authx/AuthContext';
 
 interface Credentials {
   email: string;
@@ -17,7 +17,7 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth(); 
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -27,6 +27,12 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(credentials.email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
     if (!credentials.email || !credentials.password) {
       setError('Please fill in all fields.');
       return;
@@ -34,7 +40,9 @@ const LoginPage: React.FC = () => {
 
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      console.log('Credentials being sent:', credentials);  // Debugging credentials
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials),
@@ -45,8 +53,8 @@ const LoginPage: React.FC = () => {
       if (res.ok) {
         const token: string = data.token;
         if (token) {
-          localStorage.setItem('authToken', token); 
-          login(null); 
+          localStorage.setItem('authToken', token);
+          login(token);
           setSuccess(true);
 
           setTimeout(() => {
