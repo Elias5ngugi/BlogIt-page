@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 
 const LandingPage: React.FC = () => {
   const isLoggedIn = !!localStorage.getItem('authToken');
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
-    navigate('/'); 
-    window.location.reload(); 
+    navigate('/');
+    window.location.reload();
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
   };
 
   return (
@@ -19,18 +24,25 @@ const LandingPage: React.FC = () => {
         <div className="logo">
           <h1>BlogIt</h1>
         </div>
-        <div className="navbar-links">
+
+        <div className="hamburger" onClick={toggleMenu}>
+          <div className="bar" />
+          <div className="bar" />
+          <div className="bar" />
+        </div>
+
+        <div className={`navbar-links ${menuOpen ? 'active' : ''}`}>
           {isLoggedIn ? (
             <>
-              <Link className="signup-btn" to="/write">Write</Link>
-              <Link className="login-btn" to="/myblogs">My Blogs</Link>
-              <Link  className="signup-btn" to="/profile">Profile</Link>
+              <Link to="/write" className="signup-btn" onClick={() => setMenuOpen(false)}>Write</Link>
+              <Link to="/myblogs" className="login-btn" onClick={() => setMenuOpen(false)}>My Blogs</Link>
+              <Link to="/profile" className="signup-btn" onClick={() => setMenuOpen(false)}>Profile</Link>
               <button onClick={handleLogout} className="logout-btn">Logout</button>
             </>
           ) : (
             <>
-              <Link to="/login" className="login-btn">Login</Link>
-              <Link to="/signup" className="signup-btn">Sign Up</Link>
+              <Link to="/login" className="login-btn" onClick={() => setMenuOpen(false)}>Login</Link>
+              <Link to="/signup" className="signup-btn" onClick={() => setMenuOpen(false)}>Sign Up</Link>
             </>
           )}
         </div>
@@ -44,18 +56,17 @@ const LandingPage: React.FC = () => {
             BlogIt allows you to share your experiences, insights, and creativity with a global audience.
           </p>
           <div className="cta-buttons">
-            {isLoggedIn?(
+            {isLoggedIn ? (
               <>
-               <Link to="/write" className="cta-btn primary-cta">Start Writing</Link>
-               <Link to="/blogs" className="cta-btn secondary-cta">Explore Stories</Link>
+                <Link to="/write" className="cta-btn primary-cta">Start Writing</Link>
+                <Link to="/blogs" className="cta-btn secondary-cta">Explore Stories</Link>
               </>
             ) : (
               <>
                 <Link to="/signup" className="cta-btn primary-cta">Start Writing</Link>
                 <Link to="/blogs" className="cta-btn secondary-cta">Explore Stories</Link>
               </>
-           )}
-
+            )}
           </div>
         </div>
       </section>
@@ -64,4 +75,3 @@ const LandingPage: React.FC = () => {
 };
 
 export default LandingPage;
-

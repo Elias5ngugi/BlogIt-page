@@ -15,15 +15,15 @@ import {
 const MyProfilePage: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
-  // State for the username and email
+  
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [displayName, setDisplayName] = useState<string>(''); // For Avatar/Display Name
-  const [isEditing, setIsEditing] = useState<boolean>(false); // To control edit mode
-  const [error, setError] = useState<string>(''); // State to handle errors
+  const [displayName, setDisplayName] = useState<string>(''); 
+  const [isEditing, setIsEditing] = useState<boolean>(false); 
+  const [error, setError] = useState<string>(''); 
 
   useEffect(() => {
-    // Fetch username and email if authenticated
+    
     const fetchUserProfile = async () => {
       if (isAuthenticated) {
         try {
@@ -36,7 +36,7 @@ const MyProfilePage: React.FC = () => {
 
           setUsername(response.data.username);
           setEmail(response.data.email);
-          setDisplayName(response.data.username); // Set display name for the avatar
+          setDisplayName(response.data.username); 
         } catch (error) {
           console.error('Error fetching profile:', error);
           setError('Failed to fetch user profile');
@@ -74,7 +74,7 @@ const MyProfilePage: React.FC = () => {
         }
       );
       console.log('Profile updated:', { username });
-      setIsEditing(false); // Disable editing after saving
+      setIsEditing(false); 
     } catch (error) {
       console.error('Error saving profile:', error);
       setError('Failed to save profile changes');
