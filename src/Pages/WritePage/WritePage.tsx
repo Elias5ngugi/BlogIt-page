@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import FloatingButton from '../../Components/FloatingButton';
+
 
 const WriteBlogPage: React.FC = () => {
   const [title, setTitle] = useState<string>('');
@@ -86,6 +88,7 @@ const WriteBlogPage: React.FC = () => {
           {editId ? 'Update Blog' : 'Save Blog'}
         </Button>
       </form>
+      <FloatingButton />
     </Box>
   );
 };

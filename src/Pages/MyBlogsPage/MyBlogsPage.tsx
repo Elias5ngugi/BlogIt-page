@@ -5,6 +5,7 @@ import {
   Snackbar, Alert
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import FloatingButton from '../../Components/FloatingButton';
 
 const MyBlogsPage: React.FC = () => {
   const [blogs, setBlogs] = useState<any[]>([]);
@@ -157,6 +158,7 @@ const MyBlogsPage: React.FC = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+      <FloatingButton />
     </Box>
   );
 };

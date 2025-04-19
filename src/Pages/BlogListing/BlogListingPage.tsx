@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Card, CardContent, Typography, Button } from '@mui/material';
 
+
 const BlogListingPage: React.FC = () => {
   const blogs = [
     {
